@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 ###############手动修改##############
-name: JDCloud-AX6000-Baili-immortalwrt
+name: JDCloud-AX6000-Baili-immortalwrt-闭源
 
 on:
   repository_dispatch:
