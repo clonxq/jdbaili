@@ -27,7 +27,7 @@ rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
 #修改qca-nss-drv启动顺序
-NSS_DRV="../feeds/nss_packages/qca-nss-drv/files/qca-nss-drv.init"
+NSS_DRV="./feeds/nss_packages/qca-nss-drv/files/qca-nss-drv.init"
 if [ -f "$NSS_DRV" ]; then
 	echo " "
 
