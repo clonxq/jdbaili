@@ -27,5 +27,5 @@ rm -rf ./feeds/luci/applications/luci-app-ssr-plus
 # git clone https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
 
 #修复Rust编译失败
-# cd /workdir/openwrt/
-# sed -i 's/ci-llvm=true/ci-llvm=false/g' feeds/packages/lang/rust/Makefile
+cd /workdir/openwrt/
+sed -i 's/ci-llvm=true/ci-llvm=false/g' feeds/packages/lang/rust/Makefile
