@@ -25,7 +25,7 @@ env:
   ###############手动修改##############
   OPENWRT_NAME: padavanonly
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-24.10
-  REPO_BRANCH: 2410
+  REPO_BRANCH: "2410"
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: padavanonly5.config
   DIY_P1_SH: padavanonlypart1.sh
