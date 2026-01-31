@@ -39,9 +39,6 @@ jobs:
   build:
     runs-on: ubuntu-24.04
 
-    permissions:
-      contents: write
-
     steps:
     - name: Check Server Performance
       run: |
@@ -95,7 +92,7 @@ jobs:
       run: |
         df -H
         
-    - name: 检查项目分支
+    - name: Checkout
       uses: actions/checkout@main
 
     - name: 初始化编译环境
