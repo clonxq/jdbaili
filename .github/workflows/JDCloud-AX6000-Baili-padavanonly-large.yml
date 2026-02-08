@@ -60,11 +60,7 @@ jobs:
        
     - name: Free disk space
       uses: sbwml/actions@free-disk
-               
-    - name: After
-      run: |
-        df -H
-        
+                   
     - name: 检查项目分支
       uses: actions/checkout@main
 
