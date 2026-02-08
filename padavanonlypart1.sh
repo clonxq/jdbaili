@@ -32,7 +32,7 @@ git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/OpenWrt-ni
 git clone https://github.com/sirpdboy/luci-theme-kucat.git package/luci-theme-kucat
 git clone https://github.com/sirpdboy/luci-app-kucat-config.git package/luci-app-kucat-config
 # git clone https://github.com/sirpdboy/luci-app-lucky.git package/lucky
-git clone https://github.com/sirpdboy/luci-app-advanced.git package/luci-app-advanced
+git clone https://github.com/sirpdboy/luci-app-advancedplus.git package/luci-app-advancedplus
 git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/luci-app-tcpdump
 git clone https://github.com/linkease/istore.git package/istore
 # git clone https://github.com/linkease/istore-ui.git package/istore-ui
