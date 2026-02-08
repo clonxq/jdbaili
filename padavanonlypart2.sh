@@ -53,7 +53,6 @@ if [ -d *"homeproxy"* ]; then
 	cd $PKG_PATH && echo "homeproxy date has been updated!"
 fi
 
-cd /workdir/openwrt/
 #修复Rust编译失败
 RUST_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/rust/Makefile")
 if [ -f "$RUST_FILE" ]; then
