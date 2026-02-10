@@ -29,8 +29,7 @@ function drop_package(){
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/OpenWrt-nikki
-git clone https://github.com/sirpdboy/luci-theme-kucat.git package/luci-theme-kucat
-git clone https://github.com/sirpdboy/luci-app-kucat-config.git package/luci-app-kucat-config
+git clone -b js github.com/0x676e67/luci-theme-design.git package/design
 # git clone https://github.com/sirpdboy/luci-app-lucky.git package/lucky
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/luci-app-advanced
 git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/luci-app-tcpdump
