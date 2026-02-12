@@ -10,7 +10,7 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 # sed -i 's/KERNEL_PATCHVER:=6.1/KERNEL_PATCHVER:=6.6/g' ./target/linux/x86/Makefile
-sed -i 's/openwrt-23.05/openwrt-25.12/g' feeds.conf.default
+# sed -i 's/openwrt-23.05/openwrt-25.12/g' feeds.conf.default
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
