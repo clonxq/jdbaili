@@ -168,24 +168,28 @@ jobs:
         # 1. 删除不必要的文件
         rm -rf packages
         
-        # 2. 定义重命名的前缀
-        PREFIX="OpenWrt-${{ env.DEVICE_NAME }}-${{ env.FILE_DATE }}"
-        
-        # 3. 对主要固件文件进行重命名 (可选，但推荐)
-        # 这会将所有以 .bin 或 .img.gz 结尾的文件加上你的前缀
+        # 2. 遍历重命名
+        # 目标：immortalwrt-mediatek-mt7981-jcg_q30-squashfs-sysupgrade-202602121854.bin
         for file in $(ls *.bin *.img.gz *.manifest 2>/dev/null); do
-          mv "$file" "${PREFIX}-${file}"
+          # 提取后缀
+          EXT="${file##*.}"
+          [[ "$file" == *.img.gz ]] && EXT="img.gz"
+          
+          # 去掉原文件名前面的 "OpenWrt-jcg_q30-20260212xxxx-" 冗余部分
+          # 这里的 sed 逻辑会自动保留从 immortalwrt 开始的部分
+          BASE_NAME=$(echo "$file" | sed -r "s/^OpenWrt-.*-[0-9]{12}-//")
+          
+          # 去掉扩展名，方便重新拼接
+          NAME_WITHOUT_EXT="${BASE_NAME%.$EXT}"
+          
+          # 重新拼接：原名核心部分-时间戳.扩展名
+          NEW_NAME="${NAME_WITHOUT_EXT}-${{ env.FILE_DATE }}.${EXT}"
+          
+          mv "$file" "$NEW_NAME"
         done
         
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: Upload firmware directory
-      uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
         
     - name: 生成固件Release标签
       id: tag
