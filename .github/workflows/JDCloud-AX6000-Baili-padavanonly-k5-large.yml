@@ -164,29 +164,42 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
+        # 进入固件所在目录
         cd openwrt/bin/targets/*/*
-        # 1. 删除不必要的文件
-        rm -rf packages
         
-        # 2. 遍历重命名
-        # 目标：immortalwrt-mediatek-mt7981-jcg_q30-squashfs-sysupgrade-202602121854.bin
-        for file in $(ls *.bin *.img.gz *.manifest 2>/dev/null); do
-          # 提取后缀
+        # 1. 明确我们要保留的文件
+        echo "发现以下文件:"
+        ls -lh
+        
+        # 2. 遍历当前目录下所有 bin, img.gz 和 manifest 文件
+        # 使用 find 避免 ls 可能出现的字符长度限制问题
+        find . -maxdepth 1 -type f \( -name "*.bin" -o -name "*.img.gz" -o -name "*.manifest" \) | while read file; do
+          # 去掉路径前缀 ./
+          file=${file#./}
+          
+          # 提取扩展名
           EXT="${file##*.}"
           [[ "$file" == *.img.gz ]] && EXT="img.gz"
           
-          # 去掉原文件名前面的 "OpenWrt-jcg_q30-20260212xxxx-" 冗余部分
-          # 这里的 sed 逻辑会自动保留从 immortalwrt 开始的部分
-          BASE_NAME=$(echo "$file" | sed -r "s/^OpenWrt-.*-[0-9]{12}-//")
+          # 重新定义文件名逻辑：
+          # 如果文件名包含 OpenWrt，则去掉冗余前缀；如果不包含，则保留原名核心
+          if [[ "$file" == *"OpenWrt"* ]]; then
+             BASE_NAME=$(echo "$file" | sed -r "s/^OpenWrt-.*-[0-9]{12}-//")
+          else
+             BASE_NAME="$file"
+          fi
           
-          # 去掉扩展名，方便重新拼接
+          # 去掉旧扩展名拼接新名称
           NAME_WITHOUT_EXT="${BASE_NAME%.$EXT}"
-          
-          # 重新拼接：原名核心部分-时间戳.扩展名
           NEW_NAME="${NAME_WITHOUT_EXT}-${{ env.FILE_DATE }}.${EXT}"
           
+          # 执行重命名并移动
           mv "$file" "$NEW_NAME"
+          echo "已整理: $NEW_NAME"
         done
+        
+        # 3. 删除 packages 文件夹 (确认它不是存放 manifest 的地方)
+        rm -rf packages
         
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
@@ -226,13 +239,14 @@ jobs:
           echo "### 插件列表" >> release_body.txt
           echo "\`\`\`text" >> release_body.txt
           
-          # 提取插件名和版本号，每行一个，使用 column 自动对齐括号
-          grep "luci-app-" "$MANIFEST_FILE" | awk '{print $1 "  [" $2 "]"}' | sort -u | column -t >> release_body.txt
+          # 重点：针对 "包名 - 版本" 格式优化的提取逻辑
+          # 1. 过滤出 luci-app- 开头的行
+          # 2. 用 awk 提取第一列(包名)和最后一列(版本号)
+          # 3. 用 column -t 实现精美对齐
+          grep "luci-app-" "$MANIFEST_FILE" | awk '{print $1 "  [" $NF "]"}' | sort -u | column -t >> release_body.txt
           
           echo "" >> release_body.txt
           echo "[ 主题 ]" >> release_body.txt
-          
-          # 提取主题
           grep "luci-theme-" "$MANIFEST_FILE" | awk '{print $1}' | sort -u >> release_body.txt
           echo "\`\`\`" >> release_body.txt
         fi
@@ -240,7 +254,7 @@ jobs:
         # 输出 Release 标签名
         echo "release_tag=${{ env.DEVICE_NAME }}-${{ env.FILE_DATE }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
-
+        
     - name: 发布固件至Release
       uses: softprops/action-gh-release@v2.1.0
       if: steps.tag.outputs.status == 'success' && !cancelled()
