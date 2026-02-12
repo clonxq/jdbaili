@@ -9,12 +9,20 @@
 # File name: diy-part2.sh
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
+# --- 调试信息：显示环境 ---
+echo "========================================="
+echo "执行目录: $(pwd)"
+echo "当前目录内容摘要:"
+ls -F | head -n 10
+echo "========================================="
 
-# Modify default IP
-# sed -i 's/192.168.1.1/192.168.5.1/g' package/base-files/files/bin/config_generate
+#修改默认IP地址
+sed -i 's/192\.168\.[0-9]*\.1/192.168.5.1/g' package/base-files/files/bin/config_generate
+#修改WIFI名称
+sed -i 's/ImmortalWrt-2.4G/Q30-2G/g' package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
+sed -i 's/ImmortalWrt-5G/Q30-5G/g' package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
 ##-----------------Del duplicate packages------------------
 rm -rf feeds/packages/net/open-app-filter
-##-----------------DIY-----------------
 rm -rf ./feeds/packages/net/adguardhome
 rm -rf ./feeds/packages/net/mosdns
 # rm -rf ./feeds/packages/net/shadowsocks-libev
@@ -23,61 +31,42 @@ rm -rf ./feeds/packages/net/mosdns
 # rm -rf ./feeds/luci/applications/luci-app-passwall
 # rm -rf ./feeds/luci/applications/luci-app-passwall2
 rm -rf ./feeds/luci/applications/luci-app-ssr-plus
+##-----------------DIY-----------------
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
-#预置HomeProxy数据
-if [ -d *"homeproxy"* ]; then
-	HP_RULE="surge"
-	HP_PATH="homeproxy/root/etc/homeproxy"
+## ----------------- Rust 综合修复逻辑 -----------------
+RUST_MAKE="feeds/packages/lang/rust/Makefile"
 
-	rm -rf ./$HP_PATH/resources/*
+if [ -f "$RUST_MAKE" ]; then
+    echo ">>> 发现 Rust Makefile，开始修复..."
 
-	git clone -q --depth=1 --single-branch --branch "release" "https://github.com/Loyalsoldier/surge-rules.git" ./$HP_RULE/
-	cd ./$HP_RULE/ && RES_VER=$(git log -1 --pretty=format:'%s' | grep -o "[0-9]*")
+    # 1. 修复 CI LLVM 配置
+    sed -i 's/ci-llvm=true/ci-llvm=false/g' "$RUST_MAKE"
 
-	echo $RES_VER | tee china_ip4.ver china_ip6.ver china_list.ver gfw_list.ver
-	awk -F, '/^IP-CIDR,/{print $2 > "china_ip4.txt"} /^IP-CIDR6,/{print $2 > "china_ip6.txt"}' cncidr.txt
-	sed 's/^\.//g' direct.txt > china_list.txt ; sed 's/^\.//g' gfw.txt > gfw_list.txt
-	mv -f ./{china_*,gfw_list}.{ver,txt} ../$HP_PATH/resources/
-
-	cd .. && rm -rf ./$HP_RULE/
-
-	cd $PKG_PATH && echo "homeproxy date has been updated!"
+    # 2. 强行降级版本 1.90.0 -> 1.89.0
+    if grep -q "1.90.0" "$RUST_MAKE"; then
+        echo ">>> 检测到 1.90.0，正在执行降级..."
+        sed -i 's/PKG_VERSION:=1.90.0/PKG_VERSION:=1.89.0/g' "$RUST_MAKE"
+        sed -i 's/PKG_HASH:=6bfeaddd90ffda2f063492b092bfed925c4b8c701579baf4b1316e021470daac/PKG_HASH:=0b9d55610d8270e06c44f459d1e2b7918a5e673809c592abed9b9c600e33d95a/g' "$RUST_MAKE"
+        echo ">>> 降级指令已执行。"
+    else
+        echo ">>> 当前版本不是 1.90.0，跳过降级。"
+    fi
+    echo ">>> Rust Makefile 处理完毕。"
+else
+    echo ">>> 错误: 未找到 $RUST_MAKE"
 fi
 
-
-#移除Shadowsocks组件
-PW_FILE=$(find ./ -maxdepth 3 -type f -wholename "*/luci-app-passwall/Makefile")
-if [ -f "$PW_FILE" ]; then
-	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev/,/x86_64/d' $PW_FILE
-	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR/,/default n/d' $PW_FILE
-	sed -i '/Shadowsocks_NONE/d; /Shadowsocks_Libev/d; /ShadowsocksR/d' $PW_FILE
-
-	cd $PKG_PATH && echo "passwall has been fixed!"
+# 3. 修正补丁文件
+RUST_PATCH="feeds/packages/lang/rust/patches/0001-Update-xz2-and-use-it-static.patch"
+if [ -f "$RUST_PATCH" ]; then
+    echo ">>> 正在修正 Rust 补丁中的 sysinfo 版本..."
+    sed -i 's/sysinfo = { version = "0.36.0"/sysinfo = { version = "0.35.0"/g' "$RUST_PATCH"
+    echo ">>> 补丁修正完毕。"
 fi
 
-SP_FILE=$(find ./ -maxdepth 3 -type f -wholename "*/luci-app-ssr-plus/Makefile")
-if [ -f "$SP_FILE" ]; then
-	sed -i '/default PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev/,/libev/d' $SP_FILE
-	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR/,/x86_64/d' $SP_FILE
-	sed -i '/Shadowsocks_NONE/d; /Shadowsocks_Libev/d; /ShadowsocksR/d' $SP_FILE
+echo "========================================="
+echo "DIY Part2 脚本执行结束"
+echo "========================================="
 
-	cd $PKG_PATH && echo "ssr-plus has been fixed!"
-fi
-
-#修复TailScale配置文件冲突
-TS_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/tailscale/Makefile")
-if [ -f "$TS_FILE" ]; then
-	sed -i '/\/files/d' $TS_FILE
-
-	cd $PKG_PATH && echo "tailscale has been fixed!"
-fi
-
-#修复Coremark编译失败
-CM_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/coremark/Makefile")
-if [ -f "$CM_FILE" ]; then
-	sed -i 's/mkdir/mkdir -p/g' $CM_FILE
-
-	cd $PKG_PATH && echo "coremark has been fixed!"
-fi
