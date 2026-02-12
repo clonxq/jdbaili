@@ -73,8 +73,7 @@ jobs:
         sudo -E apt -yqq autoremove --purge
         sudo -E apt -yqq autoclean
         sudo -E apt -yqq clean
-        sudo -E apt -yqq install rename
-        sudo -E apt -yqq install dos2unix python3-netifaces libfuse-dev llvm-dev libclang-dev clang
+        sudo -E apt -yqq install rename dos2unix python3-netifaces libfuse-dev llvm-dev libclang-dev clang
         sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
         sudo rm -rf /etc/apt/sources.list.d/* /usr/local/lib/android /opt/ghc /usr/share/dotnet /usr/local/graalvm /usr/local/.ghcup \
         /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
@@ -109,7 +108,6 @@ jobs:
         
     - name: 加载config & DIY_P2_SH
       run: |
-        [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
@@ -127,7 +125,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j$(($(nproc) * 3 / 2))
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
         
@@ -224,13 +222,14 @@ jobs:
           echo "### 插件列表" >> release_body.txt
           echo "\`\`\`text" >> release_body.txt
           
-          # 提取插件名和版本号，每行一个，使用 column 自动对齐括号
-          grep "luci-app-" "$MANIFEST_FILE" | awk '{print $1 "  [" $2 "]"}' | sort -u | column -t >> release_body.txt
+          # 重点：针对 "包名 - 版本" 格式优化的提取逻辑
+          # 1. 过滤出 luci-app- 开头的行
+          # 2. 用 awk 提取第一列(包名)和最后一列(版本号)
+          # 3. 用 column -t 实现精美对齐
+          grep "luci-app-" "$MANIFEST_FILE" | awk '{print $1 "  [" $NF "]"}' | sort -u | column -t >> release_body.txt
           
           echo "" >> release_body.txt
           echo "[ 主题 ]" >> release_body.txt
-          
-          # 提取主题
           grep "luci-theme-" "$MANIFEST_FILE" | awk '{print $1}' | sort -u >> release_body.txt
           echo "\`\`\`" >> release_body.txt
         fi
