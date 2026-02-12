@@ -153,7 +153,6 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        df -h  # 再次检查空间
 
     - name: Check space usage
       if: (!cancelled())
