@@ -164,42 +164,18 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        # 进入固件所在目录
         cd openwrt/bin/targets/*/*
-        
-        # 1. 明确我们要保留的文件
-        echo "发现以下文件:"
-        ls -lh
-        
-        # 2. 遍历当前目录下所有 bin, img.gz 和 manifest 文件
-        # 使用 find 避免 ls 可能出现的字符长度限制问题
-        find . -maxdepth 1 -type f \( -name "*.bin" -o -name "*.img.gz" -o -name "*.manifest" \) | while read file; do
-          # 去掉路径前缀 ./
-          file=${file#./}
-          
-          # 提取扩展名
-          EXT="${file##*.}"
-          [[ "$file" == *.img.gz ]] && EXT="img.gz"
-          
-          # 重新定义文件名逻辑：
-          # 如果文件名包含 OpenWrt，则去掉冗余前缀；如果不包含，则保留原名核心
-          if [[ "$file" == *"OpenWrt"* ]]; then
-             BASE_NAME=$(echo "$file" | sed -r "s/^OpenWrt-.*-[0-9]{12}-//")
-          else
-             BASE_NAME="$file"
-          fi
-          
-          # 去掉旧扩展名拼接新名称
-          NAME_WITHOUT_EXT="${BASE_NAME%.$EXT}"
-          NEW_NAME="${NAME_WITHOUT_EXT}-${{ env.FILE_DATE }}.${EXT}"
-          
-          # 执行重命名并移动
-          mv "$file" "$NEW_NAME"
-          echo "已整理: $NEW_NAME"
-        done
-        
-        # 3. 删除 packages 文件夹 (确认它不是存放 manifest 的地方)
+        # 1. 删除不必要的文件
         rm -rf packages
+        
+        # 2. 定义重命名的前缀
+        PREFIX="OpenWrt-${{ env.DEVICE_NAME }}-${{ env.FILE_DATE }}"
+        
+        # 3. 对主要固件文件进行重命名 (可选，但推荐)
+        # 这会将所有以 .bin 或 .img.gz 结尾的文件加上你的前缀
+        for file in $(ls *.bin *.img.gz *.manifest 2>/dev/null); do
+          mv "$file" "${PREFIX}-${file}"
+        done
         
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
