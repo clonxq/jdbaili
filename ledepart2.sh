@@ -17,7 +17,8 @@ rm -rf ./feeds/packages/net/adguardhome
 rm -rf ./feeds/packages/net/lucky
 rm -rf ./feeds/packages/net/mosdns
 rm -rf ./feeds/packages/net/nikki
-rm -rf ./feeds/packages/net/smartdns
+rm -rf ./package/kenzok8-packages/smartdns
+rm -rf ./package/kenzok8-packages/luci-app-smartdns
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 rm -rf ./feeds/luci/applications/luci-app-dockerman
 rm -rf ./feeds/luci/applications/luci-app-homeproxy
@@ -27,7 +28,6 @@ rm -rf ./feeds/luci/applications/luci-app-nikki
 rm -rf ./feeds/luci/applications/luci-app-passwall
 rm -rf ./feeds/luci/applications/luci-app-passwall2
 rm -rf ./feeds/luci/applications/luci-app-openclash
-rm -rf ./feeds/luci/applications/luci-app-smartdns
 rm -rf ./feeds/luci/applications/luci-app-ssr-plus
 ##-----------------DIY-----------------
 
