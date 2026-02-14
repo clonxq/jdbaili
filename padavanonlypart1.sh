@@ -36,18 +36,19 @@ function extract_pkg() {
     fi
 }
 
+#  预清理 Makefile (防止源码自带的旧版干扰)
+find ./ -name Makefile | grep -E "v2ray-geodata|mosdns" | xargs -r rm -f
+
 # --- 插件拉取列表 (全部存放至 package/diy) ---
 
-# 1. 提取 nikki (从一个仓库提取两个目录)
+#  提取 nikki (从一个仓库提取两个目录)
 extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "luci-app-nikki" "package/diy/luci-app-nikki"
 extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "nikki" "package/diy/nikki"
 
-# 2. 其他插件 (指定分支或默认)
+#  其他插件 (指定分支或默认)
 extract_pkg "https://github.com/0x676e67/luci-theme-design.git" "luci-theme-design" "package/diy/luci-theme-design" "js"
 extract_pkg "https://github.com/sirpdboy/luci-app-advanced.git" "luci-app-advanced" "package/diy/luci-app-advanced"
 extract_pkg "https://github.com/sbwml/luci-app-mosdns.git" "luci-app-mosdns" "package/diy/mosdns" "v5"
 extract_pkg "https://github.com/sbwml/v2ray-geodata.git" "v2ray-geodata" "package/diy/v2ray-geodata"
 extract_pkg "https://github.com/sirpdboy/luci-app-adguardhome.git" "luci-app-adguardhome" "package/diy/luci-app-adguardhome-sirp" "js"
 
-# 3. 预清理 Makefile (防止源码自带的旧版干扰)
-find ./ -name Makefile | grep -E "v2ray-geodata|mosdns" | xargs -r rm -f
