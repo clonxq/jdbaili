@@ -27,9 +27,9 @@ env:
   REPO_URL: https://github.com/xqrock/immortalwrt-mtk
   REPO_BRANCH: "2410"
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: padavanonly5.config
-  DIY_P1_SH: padavanonlypart1.sh
-  DIY_P2_SH: padavanonlypart2.sh
+  CONFIG_FILE: 2410k5.config
+  DIY_P1_SH: 2410part1.sh
+  DIY_P2_SH: 2410part2.sh
   SSH_ACTIONS: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
