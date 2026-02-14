@@ -15,17 +15,20 @@ sed -i 's/192\.168\.[0-9]*\.1/192.168.5.1/g' package/base-files/files/bin/config
 #修改WIFI名称
 sed -i 's/ImmortalWrt-2.4G/Q30-2G/g' package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
 sed -i 's/ImmortalWrt-5G/Q30-5G/g' package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
-##-----------------Del duplicate packages------------------
-rm -rf feeds/packages/net/open-app-filter
-##-----------------DIY-----------------
-rm -rf ./feeds/packages/net/adguardhome
-rm -rf ./feeds/packages/net/mosdns
-# rm -rf ./feeds/packages/net/shadowsocks-libev
-# rm -rf ./feeds/packages/net/shadowsocks-rust
-# rm -rf ./feeds/packages/net/shadowsocksr-libev
-# rm -rf ./feeds/luci/applications/luci-app-passwall
-# rm -rf ./feeds/luci/applications/luci-app-passwall2
-rm -rf ./feeds/luci/applications/luci-app-ssr-plus
+
+# 自动化清理冲突包 (核心完善版)
+function auto_remove_conflicts() {
+    local diy_dir="package/diy"
+    [ ! -d "$diy_dir" ] && return
+    echo ">>> 开始自动扫描 package/diy 并清理 feeds 冲突..."
+    for pkg in $(find "$diy_dir" -maxdepth 1 -mindepth 1 -type d -exec basename {} \;); do
+        # 在 feeds 全目录搜索同名包并删除
+        find feeds/ -type d -name "$pkg" | xargs -r rm -rf
+    done
+}
+auto_remove_conflicts
+
+# 特殊包处理 (Golang 强制替换)
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
