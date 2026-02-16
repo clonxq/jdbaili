@@ -35,13 +35,11 @@ function drop_package(){
 git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/OpenWrt-nikki
 git clone https://github.com/sirpdboy/luci-app-lucky.git package/lucky
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/luci-app-advanced
-git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/luci-app-tcpdump
+#git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/luci-app-tcpdump
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
-merge_package https://github.com/kenzok8/openwrt-packages openwrt-packages/luci-app-adguardhome
-merge_package https://github.com/kenzok8/openwrt-packages openwrt-packages/adguardhome
-merge_package https://github.com/kiddin9/kwrt-packages kwrt-packages/luci-app-turboacc
+git clone https://github.com/sirpdboy/luci-app-adguardhome package/luci-app-adguardhome
 merge_package https://github.com/kiddin9/kwrt-packages kwrt-packages/wrtbwmon
 merge_package https://github.com/kiddin9/kwrt-packages kwrt-packages/luci-app-wrtbwmon
