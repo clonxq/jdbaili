@@ -32,7 +32,8 @@ function drop_package(){
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 git clone https://github.com/kenzok8/openwrt-packages package/kenzok8-packages
 git clone https://github.com/kenzok8/small package/small
+git clone https://github.com/w9315273/luci-app-adguardhome package/luci-app-adguardhome
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/luci-app-advanced
-git clone https://github.com/sirpdboy/luci-app-adguardhome package/luci-app-adguardhome
+#git clone https://github.com/sirpdboy/luci-app-adguardhome package/luci-app-adguardhome
 merge_package https://github.com/kiddin9/kwrt-packages kwrt-packages/wrtbwmon
 merge_package https://github.com/kiddin9/kwrt-packages kwrt-packages/luci-app-wrtbwmon
