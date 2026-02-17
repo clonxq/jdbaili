@@ -33,3 +33,8 @@ rm -rf ./feeds/luci/applications/luci-app-openclash
 rm -rf ./feeds/luci/applications/luci-app-ssr-plus
 ##-----------------DIY-----------------
 
+# 下载并替换
+curl -sL -o target/linux/mediatek/dts/mt7986a-jdcloud-re-cs-05.dts https://raw.githubusercontent.com/clonxq/jdbaili/refs/heads/main/patch/mt7986a-jdcloud-re-cs-05.dts
+
+# 二次确认修正引导参数
+sed -i 's/root=PARTLABEL=rootfs/root=\/dev\/fit0/g' target/linux/mediatek/dts/mt7986a-jdcloud-re-cs-05.dts
