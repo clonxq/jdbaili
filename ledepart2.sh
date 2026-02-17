@@ -19,6 +19,8 @@ rm -rf ./feeds/packages/net/mosdns
 rm -rf ./feeds/packages/net/nikki
 rm -rf ./package/kenzok8-packages/smartdns
 rm -rf ./package/kenzok8-packages/luci-app-smartdns
+rm -rf ./package/kenzok8-packages/adguardhome
+rm -rf ./package/kenzok8-packages/luci-app-adguardhome
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 rm -rf ./feeds/luci/applications/luci-app-dockerman
 rm -rf ./feeds/luci/applications/luci-app-homeproxy
