@@ -42,15 +42,11 @@ mkdir -p package/diy
 
 extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "luci-app-nikki" "package/diy/luci-app-nikki"
 extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "nikki" "package/diy/nikki"
-
 git clone -b js github.com/0x676e67/luci-theme-design.git package/diy/luci-theme-design
 # git clone https://github.com/sirpdboy/luci-app-lucky.git package/diy/lucky
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/diy/luci-app-advanced
-# git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/diy/luci-app-tcpdump
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/diy/mosdns
 git clone https://github.com/sbwml/v2ray-geodata package/diy/v2ray-geodata
 git clone https://github.com/w9315273/luci-app-adguardhome package/diy/luci-app-adguardhome
-extract_pkg "https://github.com/kenzok8/openwrt-packages" "adguardhome" "package/diy/adguardhome"
-
