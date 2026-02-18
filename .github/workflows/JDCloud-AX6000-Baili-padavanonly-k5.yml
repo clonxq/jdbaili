@@ -24,7 +24,7 @@ on:
 env:
   ###############手动修改##############
   OPENWRT_NAME: padavanonly
-  REPO_URL: https://github.com/xqrock/immortalwrt-mtk
+  REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
   REPO_BRANCH: "2410"
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 2410k5.config
