@@ -41,6 +41,7 @@ function extract_pkg() {
 mkdir -p package/diy
 
 git clone -b js github.com/0x676e67/luci-theme-design.git package/diy/luci-theme-design
+git clone https://github.com/eamonxg/luci-theme-aurora package/diy/luci-theme-aurora
 # git clone https://github.com/sirpdboy/luci-app-lucky.git package/diy/lucky
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/diy/luci-app-advanced
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
