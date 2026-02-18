@@ -40,8 +40,6 @@ function extract_pkg() {
 # --- 插件拉取列表 (全部存放至 package/diy) ---
 mkdir -p package/diy
 
-extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "luci-app-nikki" "package/diy/luci-app-nikki"
-extract_pkg "https://github.com/nikkinikki-org/OpenWrt-nikki.git" "nikki" "package/diy/nikki"
 git clone -b js github.com/0x676e67/luci-theme-design.git package/diy/luci-theme-design
 # git clone https://github.com/sirpdboy/luci-app-lucky.git package/diy/lucky
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/diy/luci-app-advanced
