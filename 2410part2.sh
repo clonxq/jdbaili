@@ -32,6 +32,25 @@ auto_remove_conflicts
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
+# --- OpenClash 核心集成 ---
+echo "Optimizing OpenClash Cores..."
+mkdir -p files/etc/openclash/core
+# 使用 -sSL 保证下载稳定且日志整洁
+curl -sSL https://github.com/vernesong/OpenClash/raw/refs/heads/core/master/meta/clash-linux-arm64.tar.gz | tar -xz -C files/etc/openclash/core/
+mv files/etc/openclash/core/clash files/etc/openclash/core/clash_meta
+chmod +x files/etc/openclash/core/clash_meta
+
+# --- AdGuardHome 集成 ---
+echo "Optimizing AdGuardHome Binary..."
+mkdir -p files/usr/bin
+# 下载到临时目录处理
+curl -sSL https://github.com/AdguardTeam/AdGuardHome/releases/latest/download/AdGuardHome_linux_arm64.tar.gz | tar -xz -C /tmp/
+# 强制移动，覆盖可能存在的旧文件
+mv -f /tmp/AdGuardHome/AdGuardHome files/usr/bin/AdGuardHome
+chmod +x files/usr/bin/AdGuardHome
+# 清理临时垃圾
+rm -rf /tmp/AdGuardHome
+
 # 修正 ebtables 源码哈希值，解决编译下载校验失败问题
 ebtables_makefile="package/network/utils/ebtables/Makefile"
 if [ -f "$ebtables_makefile" ]; then
