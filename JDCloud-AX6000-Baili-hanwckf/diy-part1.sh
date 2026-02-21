@@ -44,11 +44,12 @@ rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2sock
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/diy/passwall-packages
 rm -rf feeds/luci/applications/luci-app-passwall
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/diy/passwall-luci
+git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/diy/passwall2
 # git clone https://github.com/gdy666/luci-app-lucky.git package/diy/lucky
 git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/diy/ddns-go
 git clone https://github.com/sirpdboy/luci-app-advanced.git package/diy/luci-app-advanced
-git clone https://github.com/linkease/istore.git package/diy/istore
-git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/diy/luci-app-tcpdump
+# git clone https://github.com/linkease/istore.git package/diy/istore
+# git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/diy/luci-app-tcpdump
 git clone https://github.com/tty228/luci-app-wechatpush.git package/diy/luci-app-wechatpush
 
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
@@ -56,7 +57,7 @@ find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/diy/mosdns
 git clone https://github.com/sbwml/v2ray-geodata package/diy/v2ray-geodata
 
-git clone --depth=1 https://github.com/padavanonly/immortalwrt-mt798x-6.6 temp_repo
+git clone --depth=1 -b 2410 https://github.com/padavanonly/immortalwrt-mt798x-6.6 temp_repo
 mkdir -p package/mtk-apps
 cp -rn temp_repo/package/mtk/applications/wrtbwmon package/mtk-apps/
 cp -rn temp_repo/package/mtk/applications/luci-app-wrtbwmon package/mtk-apps/
