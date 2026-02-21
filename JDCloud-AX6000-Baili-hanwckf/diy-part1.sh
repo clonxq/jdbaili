@@ -12,43 +12,58 @@
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
+function extract_pkg() {
+    local repo_url=$1
+    local repo_path=$2
+    local local_path=$3
+    local branch=${4:-""}
+    local tmp_dir="tmp_extract_$(date +%s)"
 
-function merge_package(){
-    repo=`echo $1 | rev | cut -d'/' -f 1 | rev`
-    pkg=`echo $2 | rev | cut -d'/' -f 1 | rev`
-    # find package/ -follow -name $pkg -not -path "package/custom/*" | xargs -rt rm -rf
-    git clone --depth=1 --single-branch $1
-    mv $2 package/custom/
-    rm -rf $repo
-}
-function drop_package(){
-    find package/ -follow -name $1 -not -path "package/custom/*" | xargs -rt rm -rf
-}
+    echo ">>> 正在提取: $repo_path (分支: ${branch:-默认})"
+    local clone_args="--depth 1 --filter=blob:none --sparse"
+    [ -n "$branch" ] && clone_args="$clone_args -b $branch"
 
+    git clone $clone_args "$repo_url" "$tmp_dir"
+    if [ $? -eq 0 ]; then
+        cd "$tmp_dir" || return
+        git sparse-checkout set "$repo_path"
+        cd ..
+        mkdir -p "$(dirname "$local_path")"
+        [ -d "$local_path" ] && rm -rf "$local_path"
+        if [ -d "$tmp_dir/$repo_path" ]; then
+            cp -r "$tmp_dir/$repo_path" "$local_path"
+            echo ">>> 成功保存至: $local_path"
+        fi
+        rm -rf "$tmp_dir"
+    fi
+}
 
 # Add a feed source
 # echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
-# echo 'src-git  nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git' >>feeds.conf.default
-echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
-# 移除 openwrt feeds 自带的核心库
 rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls}
-git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/passwall-packages
-# 移除 openwrt feeds 过时的luci版本
+git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/diy/passwall-packages
 rm -rf feeds/luci/applications/luci-app-passwall
-git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
-# git clone https://github.com/immortalwrt/homeproxy.git package/homeproxy
-# git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
-git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
-git clone https://github.com/sirpdboy/luci-app-advanced.git package/luci-app-advanced
-git clone https://github.com/linkease/istore.git package/istore
-git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/luci-app-tcpdump
-# git clone https://github.com/tty228/luci-app-wechatpush.git package/luci-app-wechatpush
+git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/diy/passwall-luci
+# git clone https://github.com/gdy666/luci-app-lucky.git package/diy/lucky
+# git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/diy/ddns-go
+git clone https://github.com/sirpdboy/luci-app-advanced.git package/diy/luci-app-advanced
+git clone https://github.com/linkease/istore.git package/diy/istore
+git clone https://github.com/KFERMercer/luci-app-tcpdump.git package/diy/luci-app-tcpdump
+git clone https://github.com/tty228/luci-app-wechatpush.git package/diy/luci-app-wechatpush
+
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
-git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
-git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
-merge_package https://github.com/vernesong/OpenClash OpenClash/luci-app-openclash
-merge_package https://github.com/kenzok8/openwrt-packages openwrt-packages/luci-app-adguardhome
-merge_package https://github.com/kenzok8/openwrt-packages openwrt-packages/adguardhome
-# merge_package https://github.com/sirpdboy/sirpdboy-package sirpdboy-package/wrtbwmon
-# merge_package https://github.com/sirpdboy/sirpdboy-package sirpdboy-package/luci-app-wrtbwmon
+git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/diy/mosdns
+git clone https://github.com/sbwml/v2ray-geodata package/diy/v2ray-geodata
+
+git clone --depth=1 https://github.com/padavanonly/immortalwrt-mt798x-6.6 temp_repo
+mkdir -p package/mtk-apps
+cp -rn temp_repo/package/mtk/applications/wrtbwmon package/mtk-apps/
+cp -rn temp_repo/package/mtk/applications/luci-app-wrtbwmon package/mtk-apps/
+rm -rf feeds/luci/applications/luci-app-wrtbwmon
+rm -rf feeds/packages/net/wrtbwmon
+rm -rf temp_repo
+
+extract_pkg "https://github.com/vernesong/OpenClash" "luci-app-openclash" "package/diy/luci-app-openclash"
+extract_pkg "https://github.com/kenzok8/openwrt-packages" "luci-app-adguardhome" "package/diy/luci-app-adguardhome"
+extract_pkg "https://github.com/kenzok8/openwrt-packages" "adguardhome" "package/diy/adguardhome"
