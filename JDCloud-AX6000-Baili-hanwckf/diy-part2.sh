@@ -17,6 +17,8 @@ rm -rf feeds/packages/net/open-app-filter
 ##-----------------Manually set CPU frequency for MT7986A-----------------
 sed -i '/"mediatek"\/\*|\"mvebu"\/\*/{n; s/.*/\tcpu_freq="2.0GHz" ;;/}' package/emortal/autocore/files/generic/cpuinfo
 ##-----------------DIY-----------------
+rm -rf package/feeds/luci/luci-app-wrtbwmon
+rm -rf package/feeds/packages/wrtbwmon
 rm -rf ./feeds/packages/net/adguardhome
 rm -rf ./feeds/packages/net/mosdns
 rm -rf ./feeds/packages/net/alist
